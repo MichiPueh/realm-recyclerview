@@ -24,16 +24,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
-import com.tonicartos.superslim.GridSLM;
-import com.tonicartos.superslim.LinearSLM;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import co.moonmonkeylabs.realmrecyclerview.LoadMoreListItemView;
 import co.moonmonkeylabs.realmrecyclerview.R;
 import co.moonmonkeylabs.realmrecyclerview.RealmRecyclerView;
+import com.tonicartos.superslim.GridSLM;
+import com.tonicartos.superslim.LinearSLM;
 import difflib.Chunk;
 import difflib.Delta;
 import difflib.DiffUtils;
@@ -41,6 +36,9 @@ import difflib.Patch;
 import io.realm.internal.RealmObjectProxy;
 import io.realm.internal.Row;
 import io.realm.internal.TableOrView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The base {@link RecyclerView.Adapter} that includes custom functionality to be used with the
@@ -164,12 +162,12 @@ public abstract class RealmBasedRecyclerViewAdapter
         // If automatic updates aren't enabled, then animateResults should be false as well.
         this.animateResults = (automaticUpdate && animateResults);
         if (animateResults) {
-            animatePrimaryColumnIndex = realmResults.getTable().getTable().getPrimaryKey();
+            animatePrimaryColumnIndex = realmResults.getTableOrView().getTable().getPrimaryKey();
             if (animatePrimaryColumnIndex == TableOrView.NO_MATCH) {
                 throw new IllegalStateException(
                         "Animating the results requires a primaryKey.");
             }
-            animatePrimaryIdType = realmResults.getTable().getColumnType(animatePrimaryColumnIndex);
+            animatePrimaryIdType = realmResults.getTableOrView().getColumnType(animatePrimaryColumnIndex);
             if (animatePrimaryIdType != RealmFieldType.INTEGER &&
                     animatePrimaryIdType != RealmFieldType.STRING) {
                 throw new IllegalStateException(
@@ -177,13 +175,13 @@ public abstract class RealmBasedRecyclerViewAdapter
             }
 
             if (animateExtraColumnName != null) {
-                animateExtraColumnIndex = realmResults.getTable().getTable()
+                animateExtraColumnIndex = realmResults.getTableOrView().getTable()
                         .getColumnIndex(animateExtraColumnName);
                 if (animateExtraColumnIndex == TableOrView.NO_MATCH) {
                     throw new IllegalStateException(
                             "Animating the results requires a valid animateColumnName.");
                 }
-                animateExtraIdType = realmResults.getTable().getColumnType(animateExtraColumnIndex);
+                animateExtraIdType = realmResults.getTableOrView().getColumnType(animateExtraColumnIndex);
                 if (animateExtraIdType != RealmFieldType.INTEGER &&
                         animateExtraIdType != RealmFieldType.STRING &&
                         animateExtraIdType != RealmFieldType.DATE) {
@@ -441,7 +439,7 @@ public abstract class RealmBasedRecyclerViewAdapter
             int sectionFirstPosition = 0;
             rowWrappers.clear();
 
-            final long headerIndex = realmResults.getTable().getColumnIndex(headerColumnName);
+            final long headerIndex = realmResults.getTableOrView().getColumnIndex(headerColumnName);
             int i = 0;
             for (RealmModel result : realmResults) {
                 Object rawHeader;
